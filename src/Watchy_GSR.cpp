@@ -989,7 +989,7 @@ void WatchyGSR::drawWatchFace(){
     drawWatchFaceStyle();
 
     // Haptic time pattern - runs once per new minute
-    if (WatchTime.NewMinute && Options.Haptic) {
+    if (WatchTime.NewMinute) {
         uint8_t mins = WatchTime.Local.Minute;
         uint8_t buzzes = 0;
         if      (mins == 0)  buzzes = 4;
