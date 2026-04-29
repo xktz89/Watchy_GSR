@@ -988,6 +988,20 @@ void WatchyGSR::drawWatchFace(){
 
     drawWatchFaceStyle();
 
+    // Haptic time pattern - runs once per new minute
+    if (WatchTime.NewMinute && Options.Haptic) {
+        uint8_t mins = WatchTime.Local.Minute;
+        uint8_t buzzes = 0;
+        if      (mins == 0)  buzzes = 4;
+        else if (mins == 15) buzzes = 1;
+        else if (mins == 30) buzzes = 2;
+        else if (mins == 45) buzzes = 3;
+        for (uint8_t i = 0; i < buzzes; i++) {
+            VibeTo(true);  delay(200);
+            VibeTo(false); if (i < buzzes - 1) delay(200);
+        }
+    }
+
     if (!GetNoStatus()){
         drawChargeMe();
         // Show WiFi/AP/TZ/NTP if in progress.
