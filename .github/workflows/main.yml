@@ -20,9 +20,9 @@ jobs:
       - name: Install PlatformIO
         run: pip install platformio
       - name: Build
-        run: pio run -e esp32s3
+        run: pio run -e watchy-v3
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: firmware
-          path: .pio/build/*/firmware.bin
+          path: .pio/build/watchy-v3/firmware.bin
