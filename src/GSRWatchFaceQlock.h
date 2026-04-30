@@ -281,19 +281,20 @@ const unsigned char epd_bitmap_chequerboard_qlock[] PROGMEM = {
 
 class GSRWatchFaceQlock : public WatchyGSR {
   public:
-    GSRWatchFaceQlock(const watchySettings& s) : WatchyGSR(s) {}
+    GSRWatchFaceQlock() : WatchyGSR() {}
 
     void InsertAddWatchStyles() override {
-        AddWatchStyle("Qlock");
+        QlockStyle = AddWatchStyle("Qlock");
     }
 
     void InsertDrawWatchStyle(uint8_t StyleID) override {
-        if (strcmp(getWatchStyleName(StyleID), "Qlock") == 0) {
+        if (StyleID == QlockStyle) {
             drawQlock();
         }
     }
 
   private:
+    uint8_t QlockStyle;
     std::bitset<11> bmap[10];
 
     void drawQlock() {
