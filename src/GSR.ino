@@ -99,10 +99,10 @@ class OverrideGSR : public WatchyGSR {
             case 55: qbmap[1].set(); qbmap[2] |= 0b11111100000; qbmap[3] |= 0b11110111000; break;
         }
         int rem = m % 5;
-        if (rem == 0) display.drawBitmap(0, 0, epd_bitmap_chequerboard_qlock, 16, 18, GxEPD_WHITE);
-        if (rem <= 1) display.drawBitmap(200 - 11, 0, epd_bitmap_chequerboard_qlock, 16, 18, GxEPD_WHITE);
-        if (rem <= 2) display.drawBitmap(200 - 12, 200 - 10, epd_bitmap_chequerboard_qlock, 16, 18, GxEPD_WHITE);
-        if (rem <= 3) display.drawBitmap(0, 200 - 10, epd_bitmap_chequerboard_qlock, 16, 18, GxEPD_WHITE);
+        if (rem == 0) display.drawBitmap(0, 0, epd_bitmap_chequerboard_qlock, 8, 8, GxEPD_WHITE);
+        if (rem <= 1) display.drawBitmap(192, 0, epd_bitmap_chequerboard_qlock, 8, 8, GxEPD_WHITE);
+        if (rem <= 2) display.drawBitmap(192, 192, epd_bitmap_chequerboard_qlock, 8, 8, GxEPD_WHITE);
+        if (rem <= 3) display.drawBitmap(0, 192, epd_bitmap_chequerboard_qlock, 8, 8, GxEPD_WHITE);
     }
 
     void qDrawLetters() {
