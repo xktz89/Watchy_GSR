@@ -10,6 +10,9 @@
 #if __has_include("WatchyClassicsAddOn.h")
 #include "WatchyClassicsAddOn.h"
 #endif
+#if __has_include("GSRWatchFaceQlock.h")
+#include "GSRWatchFaceQlock.h"
+#endif
 #endif
 
 // Place all of your data and variables here.
