@@ -603,19 +603,20 @@ const unsigned char window [] PROGMEM = {
 
 class GSRWatchFaceBadForEye : public WatchyGSR {
   public:
-    GSRWatchFaceBadForEye(const watchySettings& s) : WatchyGSR(s) {}
+    GSRWatchFaceQlock() : WatchyGSR() {}
 
     void InsertAddWatchStyles() override {
-        AddWatchStyle("BadForEye");
+        QlockStyle = AddWatchStyle("Qlock");
     }
 
     void InsertDrawWatchStyle(uint8_t StyleID) override {
-        if (strcmp(getWatchStyleName(StyleID), "BadForEye") == 0) {
+        if (StyleID == QlockStyle) {
             drawBadForEye();
         }
     }
 
   private:
+    uint8_t QlockStyle;
     void drawBadForEye() {
         const unsigned char *numbers[10] = {
             numbers0, numbers1, numbers2, numbers3, numbers4,
