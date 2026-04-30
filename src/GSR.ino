@@ -112,8 +112,7 @@ class OverrideGSR : public WatchyGSR {
             size_t x = 0;
             while (bitset != 0) {
                 if (bitset & 0x1) {
-                    display.drawBitmap(12 + (10 - x) * 16, 10 + y * 18,
-                                       epd_bitmap_chequerboard_qlock, 16, 18, GxEPD_WHITE);
+                    display.fillRect(13 + (10 - x) * 16, 11 + y * 18, 14, 16, GxEPD_BLACK);
                 }
                 bitset >>= 1;
                 x++;
