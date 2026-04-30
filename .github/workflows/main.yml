@@ -21,8 +21,18 @@ jobs:
         run: pip install platformio
       - name: Build
         run: pio run -e watchy-v3
+      - name: Merge firmware
+        run: |
+          pip install esptool
+          esptool.py --chip esp32s3 merge_bin \
+            -o merged_firmware.bin \
+            --flash_mode dio \
+            --flash_size 8MB \
+            0x0000 .pio/build/watchy-v3/bootloader.bin \
+            0x8000 .pio/build/watchy-v3/partitions.bin \
+            0x10000 .pio/build/watchy-v3/firmware.bin
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: firmware
-          path: .pio/build/watchy-v3/firmware.bin
+          path: merged_firmware.bin
