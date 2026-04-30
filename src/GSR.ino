@@ -2,164 +2,149 @@
 #if __has_include("GSRWatchFaceBallsy.h")
 #include "GSRWatchFaceBallsy.h"
 #endif
-#if __has_include("GSRWatchFaceBadForEye.h")
-#include "GSRWatchFaceBadForEye.h"
-#endif
 #if __has_include("GSRWatchFaceLCD.h")
 #include "GSRWatchFaceLCD.h"
+#endif
+#if __has_include("GSRWatchFaceQlock.h")
+#include "GSRWatchFaceQlock.h"
+#endif
+#if __has_include("GSRWatchFaceBadForEye.h")
+#include "GSRWatchFaceBadForEye.h"
 #endif
 #if __has_include("WeatherIcons.h")
 #include "WeatherIcons.h"
 #if __has_include("WatchyClassicsAddOn.h")
 #include "WatchyClassicsAddOn.h"
 #endif
-#if __has_include("GSRWatchFaceQlock.h")
-#include "GSRWatchFaceQlock.h"
-#endif
 #endif
 
-// Place all of your data and variables here.
-
-//RTC_DATA_ATTR uint8_t MyStyle;  // Remember RTC_DATA_ATTR for your variables so they don't get wiped on deep sleep.
-
+RTC_DATA_ATTR uint8_t QlockStyleID;
+RTC_DATA_ATTR uint8_t BadForEyeStyleID;
 
 class OverrideGSR : public WatchyGSR {
-/*
- * Keep your functions inside the class, but at the bottom to avoid confusion.
- * Be sure to visit https://github.com/GuruSR/Watchy_GSR/blob/main/Override%20Information.md for full information on how to override
- * including functions that are available to your override to enhance functionality.
-*/
   public:
     OverrideGSR() : WatchyGSR() {}
 
-
-/*
-    void InsertPost(){
+    void InsertAddWatchStyles() {
+        QlockStyleID = AddWatchStyle("Qlock");
+        BadForEyeStyleID = AddWatchStyle("BadForEye");
     };
-*/
 
-/*
-    String InsertNTPServer() { return "<your favorite ntp server address>"; }
-*/
-
-/*
-    void InsertDefaults(){
+    void InsertDrawWatchStyle(uint8_t StyleID) {
+        #if __has_include("GSRWatchFaceQlock.h")
+        if (StyleID == QlockStyleID) {
+            drawQlockFace();
+            return;
+        }
+        #endif
+        #if __has_include("GSRWatchFaceBadForEye.h")
+        if (StyleID == BadForEyeStyleID) {
+            drawBadForEyeFace();
+            return;
+        }
+        #endif
     };
-*/
 
-/*
-    bool OverrideBitmap(){
-      return false;
-    };
-*/
+  private:
+    #if __has_include("GSRWatchFaceQlock.h")
+    std::bitset<11> qbmap[10];
 
-/*
-    void InsertOnMinute(){
-    };
-*/
+    void qResetBitmap() {
+        qbmap[0] = 0b00100111111;
+        qbmap[1] = 0b01000000011;
+        qbmap[2] = 0b00000000001;
+        qbmap[3] = 0b00001000100;
+        qbmap[4] = 0b00001111111;
+        for (int16_t i = 5; i < 9; i++) qbmap[i] = qbmap[i].set();
+        qbmap[9] = 0b11111000000;
+    }
 
-/*
-    void InsertWiFi(){
-    };
-*/
+    void qSetHours() {
+        auto hr = WatchTime.Local.Hour % 12;
+        if (hr == 0) hr = 12;
+        if (WatchTime.Local.Minute > 35) { hr++; if (hr > 12) hr = 1; }
+        switch (hr) {
+            case 1:  qbmap[5] ^= 0b11100000000; break;
+            case 2:  qbmap[6] ^= 0b00000000111; break;
+            case 3:  qbmap[5] ^= 0b00000011111; break;
+            case 4:  qbmap[6] ^= 0b11110000000; break;
+            case 5:  qbmap[6] ^= 0b00001111000; break;
+            case 6:  qbmap[5] ^= 0b00011100000; break;
+            case 7:  qbmap[8] ^= 0b11111000000; break;
+            case 8:  qbmap[7] ^= 0b11111000000; break;
+            case 9:  qbmap[4] ^= 0b00000001111; break;
+            case 10: qbmap[9] ^= 0b11100000000; break;
+            case 11: qbmap[7] ^= 0b00000111111; break;
+            case 12: qbmap[8] ^= 0b00000111111; break;
+        }
+    }
 
-/*
-    void InsertWiFiEnding(){
-    };
-*/
+    void qSetMinutes() {
+        auto m = WatchTime.Local.Minute;
+        auto diff = m - m % 5;
+        if (diff != 0) qbmap[9] |= 0b00000111111;
+        if (diff >= 35) qbmap[4] |= 0b11110000000;
+        switch (diff) {
+            case 0:  qbmap[1].set(); qbmap[2].set(); qbmap[3].set(); qbmap[4] |= 0b11110000000; break;
+            case 5:  qbmap[1].set(); qbmap[2] |= 0b11111100000; qbmap[3].set(); break;
+            case 10: qbmap[1].set(); qbmap[2].set(); qbmap[3] |= 0b11110000011; break;
+            case 15: qbmap[2].set(); qbmap[3].set(); qbmap[9] |= 0b00000111111; break;
+            case 20: qbmap[1].set(); qbmap[2] |= 0b00000011110; qbmap[3].set(); break;
+            case 25: qbmap[1].set(); qbmap[3].set(); break;
+            case 30: qbmap[1].set(); qbmap[2].set(); qbmap[3] |= 0b00000111011; break;
+            case 35: qbmap[1].set(); qbmap[3] |= 0b11110111000; break;
+            case 40: qbmap[1].set(); qbmap[2] |= 0b00000011110; qbmap[3] |= 0b11110111000; break;
+            case 45: qbmap[2].set(); qbmap[3] |= 0b11111111100; break;
+            case 50: qbmap[1].set(); qbmap[2].set(); qbmap[3] |= 0b11110000000; break;
+            case 55: qbmap[1].set(); qbmap[2] |= 0b11111100000; qbmap[3] |= 0b11110111000; break;
+        }
+        int rem = m % 5;
+        if (rem == 0) display.drawBitmap(0, 0, epd_bitmap_chequerboard_qlock, 16, 18, GxEPD_WHITE);
+        if (rem <= 1) display.drawBitmap(200 - 11, 0, epd_bitmap_chequerboard_qlock, 16, 18, GxEPD_WHITE);
+        if (rem <= 2) display.drawBitmap(200 - 12, 200 - 10, epd_bitmap_chequerboard_qlock, 16, 18, GxEPD_WHITE);
+        if (rem <= 3) display.drawBitmap(0, 200 - 10, epd_bitmap_chequerboard_qlock, 16, 18, GxEPD_WHITE);
+    }
 
-// The next 3 functions allow you to add your own WatchFaces, there are examples that do work below.
-/*
-    void InsertAddWatchStyles(){
-      MyStyle = AddWatchStyle("Mine");
-    };
-*/
-
-/*
-    void InsertInitWatchStyle(uint8_t StyleID){
-      if (StyleID == MyStyle){
-          Design.Menu.Top = 72;
-          Design.Menu.Header = 25;
-          Design.Menu.Data = 66;
-          Design.Menu.Gutter = 3;
-          Design.Menu.Font = &aAntiCorona12pt7b;
-          Design.Menu.FontSmall = &aAntiCorona11pt7b;
-          Design.Menu.FontSmaller = &aAntiCorona10pt7b;
-          Design.Face.Bitmap = nullptr;
-          Design.Face.SleepBitmap = nullptr;
-          Design.Face.Gutter = 4;
-          Design.Face.Time = 56;
-          Design.Face.TimeHeight = 45;
-          Design.Face.TimeColor = GxEPD_BLACK;
-          Design.Face.TimeFont = &aAntiCorona36pt7b;
-          Design.Face.TimeLeft = 0;
-          Design.Face.TimeStyle = WatchyGSR::dCENTER;
-          Design.Face.Day = 101;
-          Design.Face.DayGutter = 4;
-          Design.Face.DayColor = GxEPD_BLACK;
-          Design.Face.DayFont = &aAntiCorona16pt7b;
-          Design.Face.DayFontSmall = &aAntiCorona15pt7b;
-          Design.Face.DayFontSmaller = &aAntiCorona14pt7b;
-          Design.Face.DayLeft = 0;
-          Design.Face.DayStyle = WatchyGSR::dCENTER;
-          Design.Face.Date = 143;
-          Design.Face.DateGutter = 4;
-          Design.Face.DateColor = GxEPD_BLACK;
-          Design.Face.DateFont = &aAntiCorona15pt7b;
-          Design.Face.DateFontSmall = &aAntiCorona14pt7b;
-          Design.Face.DateFontSmaller = &aAntiCorona13pt7b;
-          Design.Face.DateLeft = 0;
-          Design.Face.DateStyle = WatchyGSR::dCENTER;
-          Design.Face.Year = 186;
-          Design.Face.YearLeft = 99;
-          Design.Face.YearColor = GxEPD_BLACK;
-          Design.Face.YearFont = &aAntiCorona16pt7b;
-          Design.Face.YearLeft = 0;
-          Design.Face.YearStyle = WatchyGSR::dCENTER;
-          Design.Status.WIFIx = 5;
-          Design.Status.WIFIy = 193;
-          Design.Status.BATTx = 155;
-          Design.Status.BATTy = 178;
-      }
-    };
-*/
-
-/*
-    void InsertDrawWatchStyle(uint8_t StyleID){
-      if (StyleID == MyStyle){
-            if (SafeToDraw()){
-                drawTime();
-                drawDay();
-                drawYear();
+    void qDrawLetters() {
+        uint16_t bitset;
+        for (size_t y = 0; y < 10; y++) {
+            bitset = (int)qbmap[y].to_ulong();
+            size_t x = 0;
+            while (bitset != 0) {
+                if (bitset & 0x1) {
+                    display.drawBitmap(12 + (10 - x) * 16, 10 + y * 18,
+                                       epd_bitmap_chequerboard_qlock, 16, 18, GxEPD_WHITE);
+                }
+                bitset >>= 1;
+                x++;
             }
-            if (NoMenu()) drawDate();
-      }
-    };
-*/
+        }
+    }
 
-/*
-    bool InsertHandlePressed(uint8_t SwitchNumber, bool &Haptic, bool &Refresh) {
-      switch (SwitchNumber){
-        case 2: //Back
-          Haptic = true;  // Cause Hptic feedback if set to true.
-          Refresh = true; // Cause the screen to be refreshed (redrwawn).
-          return true;  // Respond with "I used a button", so the WatchyGSR knows you actually did something with a button.
-          break;
-        case 3: //Up
-          return true;
-          break;
-        case 4: //Down
-          return true;
-      }
-      return false;
-    };
-*/
+    void drawQlockFace() {
+        display.fillScreen(GxEPD_BLACK);
+        display.drawBitmap(0, 0, epd_bitmap_qlock_bg, 200, 200, GxEPD_WHITE, GxEPD_BLACK);
+        qResetBitmap();
+        qSetHours();
+        qSetMinutes();
+        qDrawLetters();
+    }
+    #endif
 
-/*
-    bool OverrideSleepBitmap(){
-      return false;
-    };
-*/
+    #if __has_include("GSRWatchFaceBadForEye.h")
+    void drawBadForEyeFace() {
+        const unsigned char *numbers[10] = {
+            numbers0, numbers1, numbers2, numbers3, numbers4,
+            numbers5, numbers6, numbers7, numbers8, numbers9
+        };
+        display.fillScreen(GxEPD_BLACK);
+        display.drawBitmap(0, 0, window, 200, 200, GxEPD_WHITE);
+        display.drawBitmap(50,  10,  numbers[WatchTime.Local.Hour / 10],   39, 80, GxEPD_BLACK);
+        display.drawBitmap(110, 10,  numbers[WatchTime.Local.Hour % 10],   39, 80, GxEPD_BLACK);
+        display.drawBitmap(50,  110, numbers[WatchTime.Local.Minute / 10], 39, 80, GxEPD_BLACK);
+        display.drawBitmap(110, 110, numbers[WatchTime.Local.Minute % 10], 39, 80, GxEPD_BLACK);
+    }
+    #endif
 };
 
 // Do not edit anything below this, leave all of your code above.
