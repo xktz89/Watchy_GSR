@@ -2,6 +2,9 @@
 #if __has_include("GSRWatchFaceBallsy.h")
 #include "GSRWatchFaceBallsy.h"
 #endif
+#if __has_include("GSRWatchFaceBadForEye.h")
+#include "GSRWatchFaceBadForEye.h"
+#endif
 #if __has_include("GSRWatchFaceLCD.h")
 #include "GSRWatchFaceLCD.h"
 #endif
