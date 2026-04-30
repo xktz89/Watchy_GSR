@@ -5,9 +5,9 @@
 #if __has_include("GSRWatchFaceLCD.h")
 #include "GSRWatchFaceLCD.h"
 #endif
-#if __has_include("GSRWatchFaceQlock.h")
-#include "GSRWatchFaceQlock.h"
-#endif
+//#if __has_include("GSRWatchFaceQlock.h")
+//#include "GSRWatchFaceQlock.h"
+//#endif
 #if __has_include("GSRWatchFaceBadForEye.h")
 #include "GSRWatchFaceBadForEye.h"
 #endif
@@ -18,7 +18,7 @@
 #endif
 #endif
 
-RTC_DATA_ATTR uint8_t QlockStyleID;
+//RTC_DATA_ATTR uint8_t QlockStyleID;
 RTC_DATA_ATTR uint8_t BadForEyeStyleID;
 
 class OverrideGSR : public WatchyGSR {
@@ -26,17 +26,17 @@ class OverrideGSR : public WatchyGSR {
     OverrideGSR() : WatchyGSR() {}
 
     void InsertAddWatchStyles() {
-        QlockStyleID = AddWatchStyle("Qlock");
+        //QlockStyleID = AddWatchStyle("Qlock");
         BadForEyeStyleID = AddWatchStyle("BadForEye");
     };
 
     void InsertDrawWatchStyle(uint8_t StyleID) {
-        #if __has_include("GSRWatchFaceQlock.h")
-        if (StyleID == QlockStyleID) {
-            drawQlockFace();
-            return;
-        }
-        #endif
+        //#if __has_include("GSRWatchFaceQlock.h")
+        //if (StyleID == QlockStyleID) {
+        //    drawQlockFace();
+         //   return;
+        //}
+        //#endif
         #if __has_include("GSRWatchFaceBadForEye.h")
         if (StyleID == BadForEyeStyleID) {
             drawBadForEyeFace();
